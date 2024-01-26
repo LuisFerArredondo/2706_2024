@@ -17,5 +17,9 @@ public class ArmSuperStructure {
         this.beltMechanism = beltMechanism;
     }
 
-    
+    public void setRollersVoltage(){
+
+    }
+
+    public void setArmPos(){}
 }
