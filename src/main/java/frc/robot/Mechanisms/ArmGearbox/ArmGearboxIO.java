@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 /** Add your docs here. */
 public interface ArmGearboxIO {
+    
     @AutoLog
     public static class ArmGearboxIOInputs{
         public double armAbsolutePositionRad = 0.0;//Absolute encoder pos
@@ -25,5 +26,11 @@ public interface ArmGearboxIO {
     /*set the arm's motor voltage    */
     public default void setArmVoltage(double volts){}
 
+    /*set the arm motor's brake ON or OFF */
     public default void setBrakeMode(boolean brakeEnabled){}
+
+    /*Modify PID gains for tuning */
+    public default void setPIDGains(double p, double d, double i, double iz, double ff){}
+
+    public default void setSmartMotionGains(){}
 }

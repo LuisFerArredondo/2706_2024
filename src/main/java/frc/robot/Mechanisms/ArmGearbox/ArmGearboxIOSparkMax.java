@@ -4,7 +4,7 @@
 
 package frc.robot.Mechanisms.ArmGearbox;
 
-import static frc.robot.Util.CleanSparkMaxValue.cleanSparkMaxValue;
+import static frc.robot.Util.Team6328.CleanSparkMaxValue.cleanSparkMaxValue;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -12,6 +12,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkPIDController.AccelStrategy;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
@@ -71,14 +72,16 @@ public class ArmGearboxIOSparkMax implements ArmGearboxIO{
         internalEncoder.setAverageDepth(2);
   
         //PID values
-        m_pidController.setP(0);//check this values
+        /*m_pidController.setP(0);//check this values
         m_pidController.setI(0);//check this values
         m_pidController.setD(0);//check this values
         m_pidController.setIZone(0);//check this values
         m_pidController.setFF(12);//check this values
+        */
         m_pidController.setOutputRange(-1, 1);
-
+        
         //Smart motion parameters 
+        m_pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, SMART_MOTION_DEFAULT_SLOT);
         m_pidController.setSmartMotionMaxVelocity(2000, SMART_MOTION_DEFAULT_SLOT);//check this values
         m_pidController.setSmartMotionMinOutputVelocity(0, SMART_MOTION_DEFAULT_SLOT);//check this values
         m_pidController.setSmartMotionMaxAccel(1500, SMART_MOTION_DEFAULT_SLOT);
@@ -123,5 +126,15 @@ public class ArmGearboxIOSparkMax implements ArmGearboxIO{
     @Override
     public void setBrakeMode(boolean brakeEnabled) {
         m_motor.setIdleMode(brakeEnabled ? IdleMode.kBrake: IdleMode.kCoast);
-    }        
+    }
+
+    @Override
+    public void setPIDGains(double p, double i, double d, double iz, double ff) {
+        m_pidController.setP(p);//check this values
+        m_pidController.setI(i);//check this values
+        m_pidController.setD(d);//check this values
+        m_pidController.setIZone(iz);//check this values
+        m_pidController.setFF(ff);//check this values
+    }
+
 }
