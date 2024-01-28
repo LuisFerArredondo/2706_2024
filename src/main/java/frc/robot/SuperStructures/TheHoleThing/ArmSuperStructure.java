@@ -4,15 +4,15 @@
 
 package frc.robot.SuperStructures.TheHoleThing;
 
-import frc.robot.Mechanisms.ArmGearbox.ArmGearbox;
+import frc.robot.Mechanisms.ArmGearbox.ArmGearboxBase;
 import frc.robot.Mechanisms.BeltMechanism.BeltMechanism;
 
 /** Add your docs here. */
 public class ArmSuperStructure {
-    private ArmGearbox armGearbox;
+    private ArmGearboxBase armGearbox;
     private BeltMechanism beltMechanism;
     
-    public ArmSuperStructure(ArmGearbox armGearbox, BeltMechanism beltMechanism) {
+    public ArmSuperStructure(ArmGearboxBase armGearbox, BeltMechanism beltMechanism) {
         this.armGearbox = armGearbox;
         this.beltMechanism = beltMechanism;
     }

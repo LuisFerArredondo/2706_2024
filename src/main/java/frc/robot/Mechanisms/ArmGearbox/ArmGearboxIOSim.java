@@ -5,8 +5,8 @@
 package frc.robot.Mechanisms.ArmGearbox;
 
 /** Add your docs here. */
-public class ArmGearbox {
-    public ArmGearbox(){
+public class ArmGearboxIOSim {
+    public ArmGearboxIOSim(){
         
     }
 }
