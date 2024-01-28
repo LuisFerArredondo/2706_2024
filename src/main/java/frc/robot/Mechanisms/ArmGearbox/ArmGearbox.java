@@ -21,6 +21,8 @@ public class ArmGearbox extends SubsystemBase{
         private Mechanism2d mechanism;
         private MechanismRoot2d mechanismRoot;
         private MechanismLigament2d mechanismLigament;
+        https://docs.wpilib.org/en/latest/docs/software/dashboards/glass/mech2d-widget.html
+        Check that out
     */
 
     //tuneable numbers thru the dashboard
