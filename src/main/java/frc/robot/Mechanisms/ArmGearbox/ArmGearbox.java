@@ -4,6 +4,8 @@
 
 package frc.robot.Mechanisms.ArmGearbox;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -15,6 +17,7 @@ public class ArmGearbox extends SubsystemBase{
     private ArmGearboxIO io;
     private ArmGearboxIOInputsAutoLogged inputs = new ArmGearboxIOInputsAutoLogged();
 
+    //TODO: check the spark max burn manager file
     //Dashboard stuff
     /**
      *  private static final Translation2d rootPosition = new Translation2d(0.28, 0.197);
@@ -22,7 +25,8 @@ public class ArmGearbox extends SubsystemBase{
         private MechanismRoot2d mechanismRoot;
         private MechanismLigament2d mechanismLigament;
         https://docs.wpilib.org/en/latest/docs/software/dashboards/glass/mech2d-widget.html
-        Check that out
+        TODO: Check that out, the mechanism 2d
+
     */
 
     //tuneable numbers thru the dashboard
@@ -38,11 +42,17 @@ public class ArmGearbox extends SubsystemBase{
         new LoggedTunableNumber("ArmGearbox/kIZ");
     public static final LoggedTunableNumber kFF = 
         new LoggedTunableNumber("ArmGearbox/kFF");
+    public static final LoggedTunableNumber kMaxVelo = 
+        new LoggedTunableNumber("ArmGearbox/kMaxVelo");
+    public static final LoggedTunableNumber kMaxAcc = 
+        new LoggedTunableNumber("ArmGearbox/kMaxAcc");
+
 
     static{
         switch(Constants.getRobot()){
             case ROBOT_2024:
-                armAngle.initDefault(0);
+                //Set the pid values at the very start
+                armAngle.initDefault(0);//To use this one create a Tuner Command
                 kP.initDefault(0);
                 kI.initDefault(0);
                 kD.initDefault(0);
@@ -64,11 +74,27 @@ public class ArmGearbox extends SubsystemBase{
     }
     //My java knowledge stops in here, not sure how a static constructor works
 
-    public ArmGearbox(){
+    public ArmGearbox(ArmGearboxIO io){
+        System.out.println("[Init] Creating ArmGearbox");
+        this.io = io;
+        io.setBrakeMode(true);
+
         
     }
 
     @Override
     public void periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs(getName(), inputs);
+
+        //Update values if they had changed
+        if(kP.hasChanged(hashCode()) || kI.hasChanged(hashCode()) || kD.hasChanged(hashCode()) 
+        || kIZ.hasChanged(hashCode()) || kFF.hasChanged(hashCode())){
+            io.setPIDGains(kP.get(), kI.get(), kD.get(), kIZ.get(), kFF.get());
+        }
+
+        if(kMaxAcc.hasChanged(hashCode()) || kMaxVelo.hasChanged(hashCode())){
+            io.setSmartMotionGains(kMaxVelo.get(), kMaxAcc.get());
+        }
     }
 }

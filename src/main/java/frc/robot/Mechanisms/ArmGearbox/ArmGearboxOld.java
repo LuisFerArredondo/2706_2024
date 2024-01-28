@@ -12,7 +12,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ArmGearboxBase extends SubsystemBase {
+public class ArmGearboxOld extends SubsystemBase {
   private CANSparkMax top_roller;
   private SparkPIDController m_pidController;
   private RelativeEncoder m_encoder;
@@ -23,7 +23,7 @@ public class ArmGearboxBase extends SubsystemBase {
   private double GEAR_RATIO = 0.0;
   
   /** Creates a new BeltMechanism. */
-  public ArmGearboxBase() {
+  public ArmGearboxOld() {
         top_roller = new CANSparkMax(DEVICE_ID, MotorType.kBrushless);
         top_roller.restoreFactoryDefaults();
         
