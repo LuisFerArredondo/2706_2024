@@ -25,27 +25,21 @@ import frc.robot.Constants;
 public class ArmGearboxIOSparkMax implements ArmGearboxIO{
     private CANSparkMax m_motor;
     private SparkPIDController m_pidController;
-    private RelativeEncoder internalEncoder;
-    //private AbsoluteEncoder absoluteEncoder;
-    //private DutyCycleEncoder absoluteEncoder;
-    private boolean internalEncoderReverse = true;
+    private AbsoluteEncoder absoluteEncoder;
+    private boolean setReverse = true;
 
     //Constants
     private byte DEVICE_ID = 1;
     private int SMART_MOTION_DEFAULT_SLOT = 0;
     private double GEAR_RATIO = 0.0;
 
+    //TODO: add the spark max brun manager
     public ArmGearboxIOSparkMax(){
         System.out.println("[Init] Creating CubeIntakeIOSparkMax");
 
         switch(Constants.getRobot()){
             case ROBOT_2024:
                     m_motor = new CANSparkMax(DEVICE_ID, MotorType.kBrushless);
-
-                    //absoluteEncoder = new DutyCycleEncoder(0);//Check this value
-                    //absoluteEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
-                    //absoluteEncoder = m_motor.getAbsoluteEncoder(Type.kDutyCycle);
-                    //absoluteEncoder.setAverageDepth(2);//check if 1 would work better
                 break;
             default:
             throw new RuntimeException("Invalid robot for ArmGearboxIOSparkMax!");
@@ -60,21 +54,18 @@ public class ArmGearboxIOSparkMax implements ArmGearboxIO{
         m_motor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
         m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 15);
         m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, 0);
-        m_motor.setInverted(internalEncoderReverse);
+        m_motor.setInverted(setReverse);
         m_motor.setCANTimeout(250); //Units in miliseconds
 
         m_pidController = m_motor.getPIDController();
-        internalEncoder = m_motor.getEncoder();    
+        absoluteEncoder = m_motor.getAbsoluteEncoder(Type.kDutyCycle);
+        absoluteEncoder.setAverageDepth(2);//check if 1 would work better
         
         m_motor.setIdleMode(IdleMode.kCoast);
         //Voltage compensation
         m_motor.enableVoltageCompensation(12); //Check this values
         m_motor.setSmartCurrentLimit(40); //Units in AMPS, should not be more than 40 check with 
         //Hardware to which port on the pdh the motor is connected to
-
-        internalEncoder.setPosition(0.0);
-        internalEncoder.setMeasurementPeriod(10);
-        internalEncoder.setAverageDepth(2);
   
         //PID values
         m_pidController.setP(0);//check this values
@@ -101,17 +92,18 @@ public class ArmGearboxIOSparkMax implements ArmGearboxIO{
 
     @Override
     public void updateInputs(ArmGearboxIOInputs inputs) {
-        //inputs.armAbsolutePositionRad = 
-        //    MathUtil.angleModulus(
-        //        Units.rotationsToRadians(absoluteEncoder.getPosition() * (internalEncoderReverse ? -1 : 1)));
+        inputs.armAbsolutePositionRad = 
+            MathUtil.angleModulus(
+                Units.rotationsToRadians(absoluteEncoder.getPosition() * (setReverse ? -1 : 1)));
         
-        inputs.armInternalPositionRad = 
-            cleanSparkMaxValue(
-                inputs.armInternalPositionRad, Units.rotationsToRadians(internalEncoder.getPosition()));//TODO: Add the gear ratio
         
-        inputs.armInternalVelocityRadPerSec = 
-            cleanSparkMaxValue(
-                inputs.armInternalVelocityRadPerSec, Units.rotationsPerMinuteToRadiansPerSecond(internalEncoder.getPosition()));//TODO: Add the gear ratio
+        //inputs.armInternalPositionRad = 
+        //    cleanSparkMaxValue(
+        //        inputs.armInternalPositionRad, Units.rotationsToRadians(internalEncoder.getPosition()));//TODO: Add the gear ratio
+        
+        //inputs.armInternalVelocityRadPerSec = 
+        //    cleanSparkMaxValue(
+        //        inputs.armInternalVelocityRadPerSec, Units.rotationsPerMinuteToRadiansPerSecond(internalEncoder.getPosition()));//TODO: Add the gear ratio
         
         inputs.armAppliedVolts = m_motor.getAppliedOutput() * m_motor.getBusVoltage();
         

@@ -19,10 +19,11 @@ import edu.wpi.first.wpilibj.RobotBase;
 public final class Constants {
   private static final RobotType robot = RobotType.ROBOT_2024;
   public static final double loopPeriodSecs = 0.02;
-  public static final boolean tuningMode = false;
+  public static final boolean tuningMode = true;
 
   public static boolean invalidRobotAlertSent = false;
 
+  //This method is to know if the robot code is in real/simulator mode or replay mode
   public static RobotType getRobot() {
     if (!disableHAL && RobotBase.isReal()) {
       if (robot == RobotType.ROBOT_SIM) { // Invalid robot selected
@@ -39,6 +40,7 @@ public final class Constants {
     }
   }
 
+  //To get the mode
   public static Mode getMode() {
     switch (getRobot()) {
       case ROBOT_2024:
@@ -52,14 +54,17 @@ public final class Constants {
     }
   }
 
+  //Folder root in the usb stick
   public static final Map<RobotType, String> logFolders =
-      Map.of(RobotType.ROBOT_2024, "/media/sda2/");
+      Map.of(RobotType.ROBOT_2024, "/U/logs");
 
+  //All of the robot types we ever get
   public static enum RobotType {
     ROBOT_2024,
     ROBOT_SIM
   }
 
+  //Modes of the code
   public static enum Mode {
     REAL,
     REPLAY,

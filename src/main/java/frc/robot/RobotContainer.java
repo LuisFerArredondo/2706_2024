@@ -8,6 +8,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Mode;
+import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIO;
+import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIOSim;
+import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIOSparkMax;
+import frc.robot.SuperStructures.Arm.ArmGearbox;
+import frc.robot.SuperStructures.Arm.ArmTuningCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -16,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private ArmGearbox armGearbox;
   // The robot's subsystems and commands are defined here...
   // Replace with CommandPS4Controller or CommandJoystick if needed
   //private final CommandXboxController m_driverController =
@@ -23,6 +30,22 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    if (Constants.getMode() != Mode.REPLAY) {
+      switch(Constants.getRobot()){
+        case ROBOT_2024:
+          armGearbox = new ArmGearbox(new ArmGearboxIOSparkMax());
+        break;
+        case ROBOT_SIM:
+          armGearbox = new ArmGearbox(new ArmGearboxIOSim());  
+        break;
+        default:
+        break;
+      }
+    }
+
+    if(armGearbox == null){
+      armGearbox = new ArmGearbox(new ArmGearboxIO() {});
+    }
     // Configure the trigger bindings
     configureBindings();
   }
@@ -39,7 +62,7 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     
-
+    armGearbox.setDefaultCommand(new ArmTuningCommand(armGearbox));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
   }
