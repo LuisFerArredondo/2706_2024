@@ -33,13 +33,16 @@ public class ArmGearbox extends SubsystemBase {
   public static final LoggedTunableNumber kIZ = // Value just for Real
       new LoggedTunableNumber("ArmGearbox/kIZ");
   public static final LoggedTunableNumber kFF = new LoggedTunableNumber("ArmGearbox/kFF");
-  public static final LoggedTunableNumber kMaxVelo = new LoggedTunableNumber("ArmGearbox/kMaxVelo");
-  public static final LoggedTunableNumber kMaxAcc = new LoggedTunableNumber("ArmGearbox/kMaxAcc");
+  //public static final LoggedTunableNumber kMaxVelo = new LoggedTunableNumber("ArmGearbox/kMaxVelo");
+  //public static final LoggedTunableNumber kMaxAcc = new LoggedTunableNumber("ArmGearbox/kMaxAcc");
 
-  //This method will be called only once, and its when the robot is turned on
-  static {
-    switch (Constants.getRobot()) {
-      case ROBOT_2024:
+  /** Creates a new ArmGearbox. */
+  public ArmGearbox(ArmGearboxIO io) {
+    System.out.println("[Init] Creating ArmGearbox");
+    this.io = io;
+     switch (Constants.currentMode) {
+      case REAL:
+      case REPLAY:
         // Set the pid values at the very start
         armAngle.initDefault(0);// To use this one create a Tuner Command
         kP.initDefault(0);
@@ -47,29 +50,26 @@ public class ArmGearbox extends SubsystemBase {
         kD.initDefault(0);
         kIZ.initDefault(0);
         kFF.initDefault(0);
+        io.setPIDGains(kP.get(), kI.get(), kD.get(), kIZ.get(), kFF.get());
         break;
-      case ROBOT_SIM:
+      case SIM:
         armAngle.initDefault(0);
         kP.initDefault(0);
         kI.initDefault(0);
         kD.initDefault(0);
         kIZ.initDefault(0);// Leave it as 0
         kFF.initDefault(0);
+        io.setPIDGains(kP.get(), kI.get(), kD.get(), kIZ.get(), kFF.get());   
         break;
       default:
         break;
-
     }
-  }
-
-  public void allowMovementForTuning(){
-    io.setReference(armAngle.get(), ControlType.kSmartMotion);
-  }
-  /** Creates a new ArmGearbox. */
-  public ArmGearbox(ArmGearboxIO io) {
-    System.out.println("[Init] Creating ArmGearbox");
-    this.io = io;
+  
     io.setBrakeMode(true);
+  }
+  
+  public void allowMovementForTuning(){
+    io.setReference(armAngle.get());
   }
 
   @Override
@@ -83,8 +83,8 @@ public class ArmGearbox extends SubsystemBase {
         io.setPIDGains(kP.get(), kI.get(), kD.get(), kIZ.get(), kFF.get());
     }
 
-    if(kMaxAcc.hasChanged(hashCode()) || kMaxVelo.hasChanged(hashCode())){
-        io.setSmartMotionGains(kMaxVelo.get(), kMaxAcc.get());
-    }
+    //if(kMaxAcc.hasChanged(hashCode()) || kMaxVelo.hasChanged(hashCode())){
+    //    io.setSmartMotionGains(kMaxVelo.get(), kMaxAcc.get());
+    //}
   }
 }

@@ -39,27 +39,8 @@ import frc.robot.Util.Team6328.Alert.AlertType;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private static final double canErrorTimeThreshold = 0.5; // Seconds to disable alert
   private Command autoCommand;
-
-  private boolean autoMessagePrinted;
-  private double autoStart;
-
   private RobotContainer m_robotContainer;
-  private final Timer canErrorTimer = new Timer();
-  private final Timer canErrorTimerInitial = new Timer();
-  private final Timer disabledTimer = new Timer();
-
-  private final Alert logNoFileAlert = new Alert("No log path set for current robot. Data will NOT be logged.",
-      AlertType.WARNING);
-  private final Alert logReceiverQueueAlert = new Alert("Logging queue exceeded capacity, data will NOT be logged.",
-      AlertType.ERROR);
-  private final Alert canErrorAlert = new Alert("CAN errors detected, robot may not be controllable.", AlertType.ERROR);
-
-  // Set the refresh rate of the robot
-  public Robot() {
-    super(Constants.loopPeriodSecs);
-  }
 
   @Override
   public void robotInit() {
@@ -81,21 +62,16 @@ public class Robot extends LoggedRobot {
         break;
     }
 
-    switch (Constants.getMode()) {
+    // Set up data receivers & replay source
+    switch (Constants.currentMode) {
       case REAL:
-      // Running on a real robot, log to a USB stick ("/U/logs")
-        String folder = Constants.logFolders.get(Constants.getRobot());
-        if (folder != null) {
-          Logger.addDataReceiver(new WPILOGWriter());
-        } else {
-          logNoFileAlert.set(true);
-        }
+        // Running on a real robot, log to a USB stick ("/U/logs")
+        Logger.addDataReceiver(new WPILOGWriter());
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
       case SIM:
         // Running a physics simulator, log to NT
-        DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -114,42 +90,8 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     Logger.start();
 
-
-    // Log active commands
-    Map<String, Integer> commandCounts = new HashMap<>();
-    BiConsumer<Command, Boolean> logCommandFunction =
-        (Command command, Boolean active) -> {
-          String name = command.getName();
-          int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
-          commandCounts.put(name, count);
-          Logger.recordOutput(
-                  "CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()), active);
-          Logger.recordOutput("CommandsAll/" + name, count > 0);
-        };
-    CommandScheduler.getInstance()
-        .onCommandInitialize(
-            (Command command) -> {
-              logCommandFunction.accept(command, true);
-            });
-    CommandScheduler.getInstance()
-        .onCommandFinish(
-            (Command command) -> {
-              logCommandFunction.accept(command, false);
-            });
-    CommandScheduler.getInstance()
-        .onCommandInterrupt(
-            (Command command) -> {
-              logCommandFunction.accept(command, false);
-            });
-
-    canErrorTimer.reset();
-    canErrorTimer.start();
-    canErrorTimerInitial.reset();
-    canErrorTimerInitial.start();
-    disabledTimer.reset();
-    disabledTimer.start();
-
-    System.out.println("[Init] Instantiating RobotContainer");
+    // Instantiate our RobotContainer. This will perform all our button bindings,
+    // and put our autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
   }
 
@@ -158,45 +100,6 @@ public class Robot extends LoggedRobot {
     //Check if this improves something
     //Threads.setCurrentThreadPriority(true, 99);
 
-    // Update CAN error alert
-    var canStatus = RobotController.getCANStatus();
-    if (canStatus.receiveErrorCount > 0 || canStatus.transmitErrorCount > 0) {
-      canErrorTimer.reset();
-    }
-    canErrorAlert.set(
-        !canErrorTimer.hasElapsed(canErrorTimeThreshold)
-            && canErrorTimerInitial.hasElapsed(canErrorTimeThreshold));
-
-    // Check logging fault
-    logReceiverQueueAlert.set(Logger.getReceiverQueueFault());
-
-
-    // Log list of NT clients
-    List<String> clientNames = new ArrayList<>();
-    List<String> clientAddresses = new ArrayList<>();
-    for (var client : NetworkTableInstance.getDefault().getConnections()) {
-      clientNames.add(client.remote_id);
-      clientAddresses.add(client.remote_ip);
-    }
-    Logger.recordOutput("NTClients/Names", clientNames.toArray(new String[clientNames.size()]));
-    Logger.recordOutput("NTClients/Addresses", clientAddresses.toArray(new String[clientAddresses.size()]));
-
-
-    // Print auto duration
-    if (autoCommand != null) {
-      if (!autoCommand.isScheduled() && !autoMessagePrinted) {
-        if (DriverStation.isAutonomousEnabled()) {
-          System.out.println(
-              String.format(
-                  "*** Auto finished in %.2f secs ***", Timer.getFPGATimestamp() - autoStart));
-        } else {
-          System.out.println(
-              String.format(
-                  "*** Auto cancelled in %.2f secs ***", Timer.getFPGATimestamp() - autoStart));
-        }
-        autoMessagePrinted = true;
-      }
-    }
 
     CommandScheduler.getInstance().run();
   }
@@ -216,8 +119,6 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
-    autoStart = Timer.getFPGATimestamp();
-    autoMessagePrinted = false;
     autoCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)

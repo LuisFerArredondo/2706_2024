@@ -30,22 +30,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    if (Constants.getMode() != Mode.REPLAY) {
-      switch(Constants.getRobot()){
-        case ROBOT_2024:
-          armGearbox = new ArmGearbox(new ArmGearboxIOSparkMax());
-        break;
-        case ROBOT_SIM:
-          armGearbox = new ArmGearbox(new ArmGearboxIOSim());  
-        break;
-        default:
-        break;
-      }
-    }
-
-    if(armGearbox == null){
-      armGearbox = new ArmGearbox(new ArmGearboxIO() {});
-    }
+   
     // Configure the trigger bindings
     configureBindings();
   }

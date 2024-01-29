@@ -6,6 +6,8 @@ package frc.robot.Mechanisms.ArmGearbox;
 
 import static frc.robot.Util.Team6328.CleanSparkMaxValue.cleanSparkMaxValue;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -23,30 +25,18 @@ import frc.robot.Constants;
 
 /** Add your docs here. */
 public class ArmGearboxIOSparkMax implements ArmGearboxIO{
-    private CANSparkMax m_motor;
+    private CANSparkMax m_motor = new CANSparkMax(1, MotorType.kBrushless);
+;
     private SparkPIDController m_pidController;
     private AbsoluteEncoder absoluteEncoder;
     private boolean setReverse = true;
 
     //Constants
-    private byte DEVICE_ID = 1;
     private int SMART_MOTION_DEFAULT_SLOT = 0;
-    private double GEAR_RATIO = 0.0;
 
     //TODO: add the spark max brun manager
     public ArmGearboxIOSparkMax(){
         System.out.println("[Init] Creating CubeIntakeIOSparkMax");
-
-        switch(Constants.getRobot()){
-            case ROBOT_2024:
-                    m_motor = new CANSparkMax(DEVICE_ID, MotorType.kBrushless);
-                break;
-            default:
-            throw new RuntimeException("Invalid robot for ArmGearboxIOSparkMax!");
-
-        }
-
-        m_motor = new CANSparkMax(DEVICE_ID, MotorType.kBrushless);
         m_motor.restoreFactoryDefaults();
         
         //Soft limit params
@@ -55,13 +45,13 @@ public class ArmGearboxIOSparkMax implements ArmGearboxIO{
         m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 15);
         m_motor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, 0);
         m_motor.setInverted(setReverse);
-        m_motor.setCANTimeout(250); //Units in miliseconds
+        m_motor.setCANTimeout(500); //Units in miliseconds
+        m_motor.setIdleMode(IdleMode.kCoast);
 
         m_pidController = m_motor.getPIDController();
         absoluteEncoder = m_motor.getAbsoluteEncoder(Type.kDutyCycle);
         absoluteEncoder.setAverageDepth(2);//check if 1 would work better
         
-        m_motor.setIdleMode(IdleMode.kCoast);
         //Voltage compensation
         m_motor.enableVoltageCompensation(12); //Check this values
         m_motor.setSmartCurrentLimit(40); //Units in AMPS, should not be more than 40 check with 
@@ -82,12 +72,14 @@ public class ArmGearboxIOSparkMax implements ArmGearboxIO{
         m_pidController.setSmartMotionMinOutputVelocity(0, SMART_MOTION_DEFAULT_SLOT);//check this values
         m_pidController.setSmartMotionMaxAccel(1500, SMART_MOTION_DEFAULT_SLOT);
         m_pidController.setSmartMotionAllowedClosedLoopError(0, SMART_MOTION_DEFAULT_SLOT);//check this values
-
     }
 
     @Override
-    public void setReference(double value, ControlType controlType){
-        m_pidController.setReference(value, controlType);
+    public void setReference(double value){
+        double setpoint = Units.degreesToRotations(value);
+        m_pidController.setReference(setpoint, ControlType.kSmartMotion);
+
+        Logger.recordOutput("ArmGearbox/SetPointPosition", value);
     }
 
     @Override
@@ -95,27 +87,13 @@ public class ArmGearboxIOSparkMax implements ArmGearboxIO{
         inputs.armAbsolutePositionRad = 
             MathUtil.angleModulus(
                 Units.rotationsToRadians(absoluteEncoder.getPosition() * (setReverse ? -1 : 1)));
-        
-        
-        //inputs.armInternalPositionRad = 
-        //    cleanSparkMaxValue(
-        //        inputs.armInternalPositionRad, Units.rotationsToRadians(internalEncoder.getPosition()));//TODO: Add the gear ratio
-        
-        //inputs.armInternalVelocityRadPerSec = 
-        //    cleanSparkMaxValue(
-        //        inputs.armInternalVelocityRadPerSec, Units.rotationsPerMinuteToRadiansPerSecond(internalEncoder.getPosition()));//TODO: Add the gear ratio
-        
+
         inputs.armAppliedVolts = m_motor.getAppliedOutput() * m_motor.getBusVoltage();
         
         inputs.armCurrentAmps = new double[]{m_motor.getOutputCurrent()};
         
         inputs.armTempCelcius = new double[]{m_motor.getMotorTemperature()};
     }
-
-    @Override
-    public void setArmVoltage(double volts) {
-       m_motor.setVoltage(volts);
-    }    
 
     @Override
     public void setBrakeMode(boolean brakeEnabled) {
@@ -130,12 +108,4 @@ public class ArmGearboxIOSparkMax implements ArmGearboxIO{
         m_pidController.setIZone(iz);//check this values
         m_pidController.setFF(ff);//check this values
     }
-
-    @Override
-    public void setSmartMotionGains(double maxVel, double maxAcc){
-        m_pidController.setSmartMotionMaxVelocity(maxVel, SMART_MOTION_DEFAULT_SLOT);//check this values
-        m_pidController.setSmartMotionMaxAccel(maxAcc, SMART_MOTION_DEFAULT_SLOT);
-       
-    }
-
 }
