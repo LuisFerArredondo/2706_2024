@@ -26,7 +26,7 @@ import frc.robot.Constants;
 /** Add your docs here. */
 public class ArmGearboxIOSparkMax implements ArmGearboxIO{
     private CANSparkMax m_motor = new CANSparkMax(1, MotorType.kBrushless);
-;
+
     private SparkPIDController m_pidController;
     private AbsoluteEncoder absoluteEncoder;
     private boolean setReverse = true;

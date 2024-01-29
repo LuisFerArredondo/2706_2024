@@ -30,7 +30,17 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-   
+    switch(Constants.currentMode){
+      case REAL:
+      case REPLAY:
+        armGearbox = new ArmGearbox(new ArmGearboxIOSparkMax());
+        break;
+      case SIM:
+        armGearbox = new ArmGearbox(new ArmGearboxIOSim());
+        break;
+      default:
+      armGearbox = new ArmGearbox(new ArmGearboxIO() {});
+        break;}
     // Configure the trigger bindings
     configureBindings();
   }

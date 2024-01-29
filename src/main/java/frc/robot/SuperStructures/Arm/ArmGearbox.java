@@ -50,6 +50,7 @@ public class ArmGearbox extends SubsystemBase {
         kD.initDefault(0);
         kIZ.initDefault(0);
         kFF.initDefault(0);
+        
         io.setPIDGains(kP.get(), kI.get(), kD.get(), kIZ.get(), kFF.get());
         break;
       case SIM:
