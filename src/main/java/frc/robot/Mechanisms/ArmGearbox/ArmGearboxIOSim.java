@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 public class ArmGearboxIOSim implements ArmGearboxIO{
     private SingleJointedArmSim armSim = new SingleJointedArmSim(DCMotor.getNEO(1), 30,5, 1, 0, ((3 * Math.PI) / 4), true, 0, VecBuilder.fill((2 * Math.PI) / 1024));
     private DutyCycleEncoderSim absouluteEncoderSim = new DutyCycleEncoderSim(10);
-    private PIDController m_controller;
+    private PIDController m_controller = new PIDController(0, 0, 0);
     private double ffVolts = 0.0;
     private double appliedVolts = 0.0;
 
@@ -29,7 +29,7 @@ public class ArmGearboxIOSim implements ArmGearboxIO{
         https://docs.wpilib.org/en/latest/docs/software/wpilib-tools/robot-simulation/physics-sim.html
      * 
     */    
-    
+
     @Override
     public void updateInputs(ArmGearboxIOInputs inputs) {
         appliedVolts = MathUtil.clamp(m_controller.calculate(armSim.getAngleRads()) + ffVolts, -12, 12);
