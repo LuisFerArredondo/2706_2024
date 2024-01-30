@@ -84,6 +84,7 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
         break;
     }
+    //TODO: add the logging for the battery, commands, and other stuff
 
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()

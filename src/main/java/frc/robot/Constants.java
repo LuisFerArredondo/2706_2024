@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.RobotBase;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  //TODO: check Team's 6328 2023 robots code and see what you can implement for constants, besides add the
+  //Spark max burn manager
  public static final Mode currentMode = Mode.SIM;
  public static final boolean tuningMode = true;
 

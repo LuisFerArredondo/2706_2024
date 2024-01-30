@@ -14,7 +14,6 @@ import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIO;
 import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIOSim;
 import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIOSparkMax;
 import frc.robot.SuperStructures.Arm.ArmGearbox;
-import frc.robot.SuperStructures.Arm.ArmTuningCommand;
 import frc.robot.Util.Team6328.LoggedTunableNumber;
 
 /**

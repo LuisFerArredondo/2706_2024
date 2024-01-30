@@ -27,8 +27,9 @@ public class ArmGearboxIOSim implements ArmGearboxIO{
     private double appliedVolts = 0.0;
 
     /*
-     TODO: add the Single Jointed Arm Sim, add a normal pid with a normal feedforward calculation:
-        "SetVoltage(pidOutput + FeedForwardOutput)"
+     TODO: Add properly the simulator:
+     -Add the battery simulator
+     -And check what else you are missing
         https://docs.wpilib.org/en/latest/docs/software/wpilib-tools/robot-simulation/physics-sim.html
      * 
     */    
