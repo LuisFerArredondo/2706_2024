@@ -75,7 +75,7 @@ public class ArmGearbox extends SubsystemBase {
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
+    io.updateValues(inputs);
     Logger.processInputs(getName(), inputs);
 
     //Update values if they had changed

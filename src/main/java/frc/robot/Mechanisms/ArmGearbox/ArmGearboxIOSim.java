@@ -31,7 +31,7 @@ public class ArmGearboxIOSim implements ArmGearboxIO{
     */    
 
     @Override
-    public void updateInputs(ArmGearboxIOInputs inputs) {
+    public void updateValues(ArmGearboxIOValues inputs) {
         appliedVolts = MathUtil.clamp(m_controller.calculate(armSim.getAngleRads()) + ffVolts, -12, 12);
         armSim.setInputVoltage(appliedVolts);
 

@@ -10,7 +10,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ArmGearboxIO {
     
     @AutoLog
-    public static class ArmGearboxIOInputs{
+    public static class ArmGearboxIOValues{
         public double armAbsolutePositionRad = 0.0;//Absolute encoder pos
         public double armAppliedVolts = 0.0;//voltage applied to the spark
 
@@ -19,7 +19,7 @@ public interface ArmGearboxIO {
     }
 
     /*update logget inputs  */
-    public default void updateInputs(ArmGearboxIOInputs inputs){}
+    public default void updateValues(ArmGearboxIOValues inputs){}
 
     /*set the arm motor's brake ON or OFF */
     public default void setBrakeMode(boolean brakeEnabled){}

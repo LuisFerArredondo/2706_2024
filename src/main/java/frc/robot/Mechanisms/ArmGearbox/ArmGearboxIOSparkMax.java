@@ -83,7 +83,7 @@ public class ArmGearboxIOSparkMax implements ArmGearboxIO{
     }
 
     @Override
-    public void updateInputs(ArmGearboxIOInputs inputs) {
+    public void updateValues(ArmGearboxIOValues inputs) {
         inputs.armAbsolutePositionRad = 
             MathUtil.angleModulus(
                 Units.rotationsToRadians(absoluteEncoder.getPosition() * (setReverse ? -1 : 1)));
