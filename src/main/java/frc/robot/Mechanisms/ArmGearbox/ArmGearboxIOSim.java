@@ -4,6 +4,8 @@
 
 package frc.robot.Mechanisms.ArmGearbox;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.Robot;
 
 /** Add your docs here. */
 public class ArmGearboxIOSim implements ArmGearboxIO{
@@ -32,8 +35,6 @@ public class ArmGearboxIOSim implements ArmGearboxIO{
 
     @Override
     public void updateValues(ArmGearboxIOValues inputs) {
-        appliedVolts = MathUtil.clamp(m_controller.calculate(armSim.getAngleRads()) + ffVolts, -12, 12);
-        armSim.setInputVoltage(appliedVolts);
 
         armSim.update(0.02);
 
@@ -45,8 +46,7 @@ public class ArmGearboxIOSim implements ArmGearboxIO{
 
     @Override
     public void setBrakeMode(boolean brakeEnabled) {
-        // TODO Auto-generated method stub
-        ArmGearboxIO.super.setBrakeMode(brakeEnabled);
+        Logger.recordOutput("ArmSim/idleMode", brakeEnabled ? "Brake" : "Coast");
     }
 
     @Override
@@ -59,5 +59,14 @@ public class ArmGearboxIOSim implements ArmGearboxIO{
     public void setReference(double value) {
         double setPoint = Units.radiansToDegrees(value);
         m_controller.setSetpoint(setPoint);
+        appliedVolts = MathUtil.clamp(m_controller.calculate(armSim.getAngleRads()) + ffVolts, -12, 12);
+        armSim.setInputVoltage(appliedVolts);
+
+    }
+
+    @Override
+    public void setVoltage(double volts) {
+        appliedVolts = volts;
+        armSim.setInputVoltage(volts);
     }
 }

@@ -8,10 +8,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class ArmTuningCommand extends Command {
   private ArmGearbox armGearbox;
+  private double setPoint;
 
   /** Creates a new ArmTuningCommand. */
-  public ArmTuningCommand(ArmGearbox armGearbox) {
+  public ArmTuningCommand(ArmGearbox armGearbox, double setPoint) {
     this.armGearbox = armGearbox;
+    this.setPoint = setPoint;
 
     addRequirements(armGearbox);
   }
@@ -19,6 +21,6 @@ public class ArmTuningCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    armGearbox.allowMovementForTuning();
+    armGearbox.setTuningSetPoint(setPoint);
   }
 }

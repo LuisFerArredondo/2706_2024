@@ -9,11 +9,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Mode;
+import frc.robot.DebuggingCommands.ArmTuner;
 import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIO;
 import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIOSim;
 import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIOSparkMax;
 import frc.robot.SuperStructures.Arm.ArmGearbox;
 import frc.robot.SuperStructures.Arm.ArmTuningCommand;
+import frc.robot.Util.Team6328.LoggedTunableNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -23,6 +25,10 @@ import frc.robot.SuperStructures.Arm.ArmTuningCommand;
  */
 public class RobotContainer {
   private ArmGearbox armGearbox;
+  
+  //Arm angle for tuning
+  public static final LoggedTunableNumber armSetPoint = new LoggedTunableNumber("ArmGearbox/ArmSetPoint");
+
   // The robot's subsystems and commands are defined here...
   // Replace with CommandPS4Controller or CommandJoystick if needed
   //private final CommandXboxController m_driverController =
@@ -40,7 +46,11 @@ public class RobotContainer {
         break;
       default:
       armGearbox = new ArmGearbox(new ArmGearboxIO() {});
-        break;}
+        break;
+    }
+
+    armSetPoint.initDefault(0);
+
     // Configure the trigger bindings
     configureBindings();
   }
@@ -57,7 +67,7 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     
-    armGearbox.setDefaultCommand(new ArmTuningCommand(armGearbox));
+    armGearbox.setDefaultCommand(new ArmTuner(armGearbox, armSetPoint.get()));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
   }

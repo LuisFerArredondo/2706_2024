@@ -108,4 +108,10 @@ public class ArmGearboxIOSparkMax implements ArmGearboxIO{
         m_pidController.setIZone(iz);//check this values
         m_pidController.setFF(ff);//check this values
     }
+
+    @Override
+    public void setVoltage(double volts) {
+        m_motor.setVoltage(0);
+    }
+
 }

@@ -29,5 +29,6 @@ public interface ArmGearboxIO {
 
     public default void setReference(double value){}
 
+    public default void setVoltage(double volts){}
     //public default void resetInternalEncoder(){}
 }
