@@ -11,7 +11,7 @@ import com.revrobotics.CANSparkBase.ControlType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIO;
-import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIOInputsAutoLogged;
+import frc.robot.Mechanisms.ArmGearbox.ArmGearboxIOValuesAutoLogged;
 import frc.robot.Util.Team6328.LoggedTunableNumber;
 
 /**
@@ -20,7 +20,7 @@ import frc.robot.Util.Team6328.LoggedTunableNumber;
 public class ArmGearbox extends SubsystemBase {
   // Hardware Control
   private ArmGearboxIO io;
-  private ArmGearboxIOInputsAutoLogged inputs = new ArmGearboxIOInputsAutoLogged();
+  private ArmGearboxIOValuesAutoLogged inputs = new ArmGearboxIOValuesAutoLogged();
 
   //TODO: Add the mechanism 2d: https://docs.wpilib.org/en/latest/docs/software/dashboards/glass/mech2d-widget.html
 
